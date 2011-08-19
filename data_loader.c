@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "verbosity.h"
+
 #define BUF_SIZE 1024
 
 const char *GTFS_FILENAME[] = { "agency.txt",
@@ -38,16 +40,19 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path) {
   PGresult *result;
   char *err = NULL;
 
+  print_info("Entering into folder: %s\n", folder_path);
   if (chdir(folder_path)) {
     fprintf(stderr, "Unknown folder : %s\n", folder_path);
     return -1;
   }
 
   for (i = 0; i < G_COUNT; ++i) {
+    print_info("Trying to open file: %s\n", GTFS_FILENAME[i]);
     fp = fopen(GTFS_FILENAME[i], "r");
     if (fp == NULL)
     {
       if (i == G_SHAPES || i == G_FREQUENCIES) {
+        print_info("Optional file '%s' not found. Ignored.\n", GTFS_FILENAME[i]);
         continue;
       } else {
         fprintf(stderr, "Required file '%s' not found\n", GTFS_FILENAME[i]);
@@ -71,6 +76,7 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path) {
         fgets(buf, BUF_SIZE, fp);
       }
       PQputCopyEnd(conn, err);
+      print_info("Copied contents of '%s' into table '%s'.'%s'", GTFS_FILENAME[i], schema, GTFS_TABLENAME[i]);
     }
     fclose(fp);
   }

@@ -10,8 +10,10 @@
 
 #include "data_loader.h"
 #include "sql_utils.h"
+#include "verbosity.h"
+int g_verbose;
 
-const char *argp_program_version = "gtfs2pgrouting 0.9";
+const char *argp_program_version = "gtfs2pgrouting 0.9.1";
 const char *argp_program_bug_address = "<justjkk@gmail.com>";
 
 /* Program documentation. */
@@ -134,6 +136,7 @@ int main(int argc, char **argv) {
   /* Parse our arguments; every option seen by parse_opt will
    be reflected in arguments. */
   argp_parse(&argp, argc, argv, 0, 0, &arguments);
+  g_verbose = arguments.verbose;
 
   conn = make_connection(&(arguments.db));
 
@@ -146,6 +149,7 @@ int main(int argc, char **argv) {
           "Error setting up gtfs schema\nIf the tables are already present, run with -D flag to skip schema creation\n");
       exit(1);
     }
+    printf("Successfully set up the gtfs schema.\n");
   }
 
   if (!strcmp(arguments.format, "folder")) {
@@ -153,6 +157,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Error importing gtfs from folder.\n");
       exit(1);
     }
+    printf("Successfully imported gtfs data from folder.\n");
   } else if (!strcmp(arguments.format, "zip")) {
     fprintf(stderr, "This feature is not supported yet.\n");
   }
