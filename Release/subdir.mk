@@ -6,17 +6,20 @@
 C_SRCS += \
 ../data_loader.c \
 ../gtfs2pgrouting.c \
-../sql_utils.c 
+../sql_utils.c \
+../verbosity.c 
 
 OBJS += \
 ./data_loader.o \
 ./gtfs2pgrouting.o \
-./sql_utils.o 
+./sql_utils.o \
+./verbosity.o 
 
 C_DEPS += \
 ./data_loader.d \
 ./gtfs2pgrouting.d \
-./sql_utils.d 
+./sql_utils.d \
+./verbosity.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
