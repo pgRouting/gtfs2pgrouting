@@ -13,7 +13,7 @@
 #include "verbosity.h"
 int g_verbose;
 
-const char *argp_program_version = "gtfs2pgrouting 0.9";
+const char *argp_program_version = "gtfs2pgrouting 0.9.1";
 const char *argp_program_bug_address = "<justjkk@gmail.com>";
 
 /* Program documentation. */
