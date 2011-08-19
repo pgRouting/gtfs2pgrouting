@@ -15,6 +15,7 @@ Install
 
 Executing
 ---------
-`./gtfs2pgrouting -?` # provides a detailed list of all the options available
+1. `cd ..` # Move to the parent folder of Release
+2. `./Release/gtfs2pgrouting -?` # provides a detailed list of all the options available
 A common scenario is to specify the database name and path to the gtfs data like this:
-`./gtfs2pgrouting -d mydatabase /home/user/Downloads/transit_data`
+`./Release/gtfs2pgrouting -d mydatabase /home/user/Downloads/transit_data`
