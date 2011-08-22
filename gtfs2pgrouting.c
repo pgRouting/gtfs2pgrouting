@@ -153,7 +153,8 @@ int main(int argc, char **argv) {
   }
 
   if (!strcmp(arguments.format, "folder")) {
-    if (import_from_folder(conn, arguments.schema, arguments.input_source)) {
+    if (run_sql(conn, "set search_path to %s", arguments.schema)
+        || import_from_folder(conn, arguments.schema, arguments.input_source)) {
       fprintf(stderr, "Error importing gtfs from folder.\n");
       exit(1);
     }

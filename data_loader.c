@@ -67,6 +67,7 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path) {
       if(PQresultStatus(result) != PGRES_COPY_IN)
       {
         fprintf(stderr, "Error trying to copy into '%s'.\n", GTFS_TABLENAME[i]);
+        print_info("%s\n", PQresultErrorMessage(result));
         return -1;
       }
       fgets(buf, BUF_SIZE, fp);
@@ -76,7 +77,7 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path) {
         fgets(buf, BUF_SIZE, fp);
       }
       PQputCopyEnd(conn, err);
-      print_info("Copied contents of '%s' into table '%s'.'%s'", GTFS_FILENAME[i], schema, GTFS_TABLENAME[i]);
+      print_info("Copied contents of '%s' into table '%s'.'%s'\n", GTFS_FILENAME[i], schema, GTFS_TABLENAME[i]);
     }
     fclose(fp);
   }
