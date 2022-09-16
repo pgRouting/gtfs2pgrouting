@@ -27,3 +27,4 @@ clean :
 	rm -rf *.o
 
 .PHONY: gtfs2pgrouting
+.PHONY: gtfs2pgrouting.o
