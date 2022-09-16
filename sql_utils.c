@@ -46,7 +46,7 @@ int run_sql_file(PGconn *conn, char *file_path) {
   fgets(buff, 1024, fp);
   i = 1;
   while (!feof(fp)) {
-    print_info("Reallocating sql buffer to %d bytes", i * 1024);
+    print_info("Reallocating sql buffer to %d bytes\n", i * 1024);
     sql = (char *) realloc(sql, sizeof(char) * i * 1024);
     strcat(sql, buff);
     fgets(buff, 1024, fp);

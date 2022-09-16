@@ -8,7 +8,9 @@ CREATE TABLE agency
   agency_url        text NOT NULL,
   agency_timezone   text NOT NULL,
   agency_lang       text NULL,
-  agency_phone      text NULL
+  agency_phone      text NULL,
+  agency_fare_url   text NULL,
+  agency_email      text NULL 
 );
 
 CREATE TABLE stops
@@ -21,8 +23,12 @@ CREATE TABLE stops
   stop_lon          wgs84_lon NOT NULL,
   zone_id           text NULL,
   stop_url          text NULL,
-  location_type     boolean NULL,
-  parent_station    text NULL
+  location_type     int NULL,
+  parent_station    text NULL,
+  stop_timezone     text NULL,
+  wheelchair_boarding int NULL,
+  level_id          text NULL,
+  platform_code     text NULL
 );
 
 CREATE TABLE routes
@@ -32,10 +38,13 @@ CREATE TABLE routes
   route_short_name  text NOT NULL,
   route_long_name   text NOT NULL,
   route_desc        text NULL,
-  route_type        integer NOT NULL CHECK(route_type >= 0 and route_type <= 7),
+  route_type        integer NOT NULL CHECK(route_type >= 0 and route_type <= 12),
   route_url         text NULL,
   route_color       text NULL,
-  route_text_color  text NULL
+  route_text_color  text NULL,
+  route_sort_order  int NULL CHECK(route_sort_order > 0),
+  continuous_pickup int NULL CHECK(continuous_pickup >= 0 and continuous_pickup <= 3),
+  continuous_dropoff int NULL CHECK(continuous_dropoff >= 0 and continuous_dropoff <= 3)
 );
 
 CREATE TABLE calendar
@@ -54,11 +63,12 @@ CREATE TABLE calendar
 
 CREATE TABLE shapes
 (
-  shape_id          text PRIMARY KEY,
+  shape_id          text,
   shape_pt_lat      wgs84_lat NOT NULL,
   shape_pt_lon      wgs84_lon NOT NULL,
   shape_pt_sequence integer NOT NULL,
-  shape_dist_traveled double precision NULL
+  shape_dist_traveled double precision NULL,
+  PRIMARY KEY (shape_id, shape_pt_sequence)
 );
 
 CREATE TABLE trips
@@ -70,7 +80,9 @@ CREATE TABLE trips
   trip_short_name   text NULL,
   direction_id      boolean NULL,
   block_id          text NULL,
-  shape_id          text NULL REFERENCES shapes
+  shape_id          text NULL,
+  wheelchair_accessible int NULL,
+  bikes_allowed     int NULL
 );
 
 CREATE TABLE stop_times
@@ -83,7 +95,9 @@ CREATE TABLE stop_times
   stop_headsign     text NULL,
   pickup_type       integer NULL CHECK(pickup_type >= 0 and pickup_type <=3),
   drop_off_type     integer NULL CHECK(drop_off_type >= 0 and drop_off_type <=3),
-  shape_dist_traveled double precision NULL
+  shape_dist_traveled double precision NULL,
+  timepoint         boolean NULL,
+  PRIMARY KEY (trip_id, stop_sequence)
 );
 
 CREATE TABLE frequencies
