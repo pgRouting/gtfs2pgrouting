@@ -5,17 +5,15 @@ This is an importer tool that uses postgresql c library to load GTFS data in the
 
 Source Code
 ------------
-The source is an Eclipse Project. It can be imported as an existing project in Eclipse.
+It can be open within any text editor
 
 Install
 -------
-1. `cd Release` # Go into the Release folder
-2. `make` # Invoke GNU Make utility
-3. `` # There is no third step.
+1. `make` # Invoke GNU Make utility
+2. `` # There is no second step.
 
 Executing
 ---------
-1. `cd ..` # Move to the parent folder of Release
-2. `./Release/gtfs2pgrouting -?` # provides a detailed list of all the options available
+1. `./gtfs2pgrouting -h` # provides a detailed list of all the options available
 A common scenario is to specify the database name and path to the gtfs data like this:
-`./Release/gtfs2pgrouting -d mydatabase /home/user/Downloads/transit_data`
+`./gtfs2pgrouting -d mydatabase /home/user/Downloads/transit_data`
