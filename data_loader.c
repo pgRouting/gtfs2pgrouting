@@ -12,12 +12,13 @@
 #include "verbosity.h"
 
 #define BUF_SIZE 1024
-#define SQL_SIZE 1024
+#define SQL_SIZE 2048
 
 const char *GTFS_FILENAME[] = {"agency.txt",
 							   "stops.txt",
 							   "routes.txt",
 							   "calendar.txt",
+							   "calendar_dates.txt",
 							   "shapes.txt",
 							   "trips.txt",
 							   "stop_times.txt",
@@ -27,6 +28,7 @@ const char *GTFS_TABLENAME[] = {"agency",
 								"stops",
 								"routes",
 								"calendar",
+								"calendar_dates",
 								"shapes",
 								"trips",
 								"stop_times",
@@ -41,6 +43,8 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path)
 	char buf[BUF_SIZE] = {0};
 	PGresult *result;
 	char *err = NULL;
+
+	char is_calendar_present = 1;
 
 	print_info("Entering into folder: %s\n", folder_path);
 	if (chdir(folder_path))
@@ -57,7 +61,17 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path)
 		fp = fopen(GTFS_FILENAME[i], "r");
 		if (fp == NULL)
 		{
-			if (i == G_SHAPES || i == G_FREQUENCIES)
+			if (i == G_CALENDAR )
+			{
+				is_calendar_present = 0;
+				print_info("Calendar not found. Calendar_dates must be present\n.");
+				continue;
+			}
+			else if ((i == G_CALENDAR_DATES) && (!is_calendar_present)) {
+				print_info("Neither Calendar not Calendar_dates found.\n");
+				return -1;
+			}
+			else if (i == G_SHAPES || i == G_FREQUENCIES)
 			{
 				print_info("Optional file '%s' not found. Ignored.\n", GTFS_FILENAME[i]);
 				continue;
@@ -82,23 +96,36 @@ int import_from_folder(PGconn *conn, char *schema, char *folder_path)
 					ci++;
 				}
 			}
-			buf[ci - 1] = '\0';
-			sprintf(sql, "COPY %s(%s) FROM STDIN WITH CSV", GTFS_TABLENAME[i], buf);
+			buf[ci] = '\0';
+			sprintf(sql, "COPY %s(%s) FROM STDIN WITH CSV HEADER;", GTFS_TABLENAME[i], buf);
 			result = PQexec(conn, sql);
+
+			printf("%s\n", sql);
+
 			if (PQresultStatus(result) != PGRES_COPY_IN)
 			{
 				fprintf(stderr, "Error trying to copy into '%s'.\n", GTFS_TABLENAME[i]);
 				print_info("%s\n", PQresultErrorMessage(result));
 				return -1;
 			}
+
+			memset(buf, 0, BUF_SIZE);
+
 			fgets(buf, BUF_SIZE, fp);
+
+			int errorStdIn = 0;
+			errorStdIn = PQputCopyData(conn, buf, strlen(buf));
+
+
 			while (!feof(fp))
-			{
-				PQputCopyData(conn, buf, strlen(buf));
+			{	
+				errorStdIn = PQputCopyData(conn, buf, strlen(buf));
+
 				fgets(buf, BUF_SIZE, fp);
 			}
+			
 			PQputCopyEnd(conn, err);
-			print_info("Copied contents of '%s' into table '%s'.'%s'\n", GTFS_FILENAME[i], schema, GTFS_TABLENAME[i]);
+			print_info("Copied contents of '%s' into table '%s'.'%s'\n\n", GTFS_FILENAME[i], schema, GTFS_TABLENAME[i]);
 		}
 		fclose(fp);
 	}
