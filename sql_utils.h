@@ -8,7 +8,7 @@
 #ifndef SQL_UTILS_H_
 #define SQL_UTILS_H_
 
-#include "libpq-fe.h"
+#include <libpq-fe.h>
 
 /**
  * @brief 
@@ -49,5 +49,7 @@ int run_sql_file(PGconn *conn, char *file_path);
  * @return int 
  */
 int run_sql(PGconn *conn, char *sql_text, ...);
+
+int add_foreign_key(PGconn *conn, char *table, char *column, char *ref_table, char *ref_column);
 
 #endif /* SQL_UTILS_H_ */

@@ -73,3 +73,24 @@ int run_sql(PGconn *conn, char *fmt, ...)
 	ret = run_prepared_sql(conn, sql);
 	return ret;
 }
+
+
+int add_foreign_key(PGconn *conn, char *table, char *column, char *ref_table, char *ref_column)
+{
+	PGresult *result;
+	int res = 0;
+	char query[1024] = {0};
+
+	sprintf(query, "ALTER TABLE %s ADD FOREIGN KEY %s REFERENCES %s(%s);", table, column, ref_table, ref_column);
+
+	result = PQexec(conn, query);
+
+	if (PQresultStatus(result) == PGRES_COMMAND_OK)
+	{
+		printf("okkkk\n");
+		res = 1;
+	} else 
+	{
+		res = 0;
+	}
+}
